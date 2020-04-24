@@ -1,4 +1,11 @@
 {
+  "name": "Misaka-on-bilibili",
+  "version": "1.0.0",
+  "description": "爬取bilibili.com上所有名为“御坂{i}号”的用户昵称",
+  "main": "run.js",
+  "repository": "https://github.com/AntaresQAQ/Misaka-on-bilibili.git",
+  "author": "Antares <antares.oier@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "bluebird": "^3.7.2",
     "fs-extra": "^9.0.0",
