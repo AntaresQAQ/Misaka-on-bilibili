@@ -1,0 +1,9 @@
+# Web Strom
+.idea
+
+# node_modules
+node_modules
+
+error.txt
+used.txt
+unused.txt
