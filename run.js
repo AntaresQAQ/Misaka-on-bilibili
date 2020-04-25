@@ -47,7 +47,7 @@ async function check(nickname) {
 
 async function main() {
     let result_path = path.join(__dirname, "result",
-        moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+        moment(new Date()).format("YYYY-MM-DD HH-mm-ss"));
     await fs.mkdir(result_path, {recursive: true});
 
     let used_file = await fs.open(path.join(result_path, "used.txt"), "w");
