@@ -61,9 +61,9 @@ async function main() {
                     await unused_file.write(nickname + '\n');
                 }
             }
-        } catch (e) {
-            console.error(e);
-            await error_file.write(`御坂${i}号\n`);
+        } catch (err) {
+            console.error(err);
+            await error_file.write(nickname + '\n');
         }
     }
 
@@ -92,9 +92,9 @@ async function main() {
                     await unused_file.write(nickname + '\n');
                 }
             }
-        } catch (e) {
-            console.error(e);
-            await error_file.write(`御坂${i}号\n`);
+        } catch (err) {
+            console.error(err);
+            await error_file.write(nickname + '\n');
         }
     }
     await used_file.write("\n\n特殊命名共计" + count_used_special + "位御坂\n\n");
