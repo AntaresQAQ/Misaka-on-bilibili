@@ -1,6 +1,7 @@
 const request = require("request-promise");
 const fs = require("fs-extra").promises;
 const path = require("path");
+const moment = require("moment");
 
 const retry_times = 3;
 const range = {begin: 0, end: 20005};
@@ -45,9 +46,13 @@ async function check(nickname) {
 }
 
 async function main() {
-    let used_file = await fs.open(path.join(__dirname, "used.txt"), "w");
-    let unused_file = await fs.open(path.join(__dirname, "unused.txt"), "w");
-    let error_file = await fs.open(path.join(__dirname, "error.txt"), "w");
+    let result_path = path.join(__dirname, "result",
+        moment(new Date()).format("YYYY-MM-DD HH:mm:ss"));
+    await fs.mkdir(result_path, {recursive: true});
+
+    let used_file = await fs.open(path.join(result_path, "used.txt"), "w");
+    let unused_file = await fs.open(path.join(result_path, "unused.txt"), "w");
+    let error_file = await fs.open(path.join(result_path, "error.txt"), "w");
 
     let count_used = 0, count_unused = 0;
     for (let i = range.begin; i <= range.end; i++) {

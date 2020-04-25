@@ -4,6 +4,12 @@
 # node_modules
 node_modules
 
+# log file
+*.log
+
+# result
+result/
+result/*
 error.txt
 used.txt
 unused.txt
