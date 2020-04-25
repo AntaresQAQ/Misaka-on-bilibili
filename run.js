@@ -67,8 +67,8 @@ async function main() {
         }
     }
 
-    await used_file.write("\n\n规则命名共计" + count_used + "位御坂\n\n");
-    await unused_file.write("\n\n规则命名共计" + count_unused + "位御坂\n\n");
+    await used_file.write("\n\n规则命名共计" + count_used + "位御坂妹妹\n\n");
+    await unused_file.write("\n\n规则命名共计" + count_unused + "位御坂妹妹\n\n");
 
     let count_used_special = 0, count_unused_special = 0;
     for (let i = range.begin; i <= Math.min(9999, range.end); i++) {
@@ -97,11 +97,11 @@ async function main() {
             await error_file.write(nickname + '\n');
         }
     }
-    await used_file.write("\n\n特殊命名共计" + count_used_special + "位御坂\n\n");
-    await unused_file.write("\n\n特殊命名共计" + count_unused_special + "位御坂\n\n");
+    await used_file.write("\n\n特殊命名共计" + count_used_special + "位御坂妹妹\n\n");
+    await unused_file.write("\n\n特殊命名共计" + count_unused_special + "位御坂妹妹\n\n");
 
-    await used_file.write("\n\n共计" + count_used + "位御坂");
-    await unused_file.write("\n\n共计" + count_unused + "位御坂");
+    await used_file.write("\n\n共计" + count_used + "位御坂妹妹");
+    await unused_file.write("\n\n共计" + count_unused + "位御坂妹妹");
 
     await used_file.close();
     await unused_file.close();
