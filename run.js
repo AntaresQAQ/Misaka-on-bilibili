@@ -2,7 +2,6 @@ const request = require("request-promise");
 const fs = require("fs-extra").promises;
 const path = require("path");
 
-const api_url = "https://passport.bilibili.com/web/generic/check/nickname";
 const retry_times = 3;
 const range = {begin: 0, end: 20005};
 
@@ -19,7 +18,7 @@ async function check(nickname) {
     while (true) {
         try {
             let res = await request.get({
-                uri: api_url,
+                uri: "https://passport.bilibili.com/web/generic/check/nickname",
                 qs: {nickName: nickname},
                 json: true,
                 timeout: 10000
