@@ -52,6 +52,7 @@ async function main() {
     let unused_file = await fs.open(path.join(tmp_dir.path, "unused.txt"), "w");
     let error_file = await fs.open(path.join(tmp_dir.path, "error.txt"), "w");
 
+    let has_error = false;
     let count_used = 0, count_unused = 0;
     for (let i = range.begin; i <= range.end; i++) {
         let nickname = `御坂${i}号`;
@@ -73,6 +74,7 @@ async function main() {
                 }
             }
         } catch (err) {
+            has_error = true;
             console.error(err);
             await error_file.write(nickname + '\n');
         }
@@ -104,6 +106,7 @@ async function main() {
                 }
             }
         } catch (err) {
+            has_error = true;
             console.error(err);
             await error_file.write(nickname + '\n');
         }
@@ -123,7 +126,11 @@ async function main() {
     await fs.mkdir(result_path, {recursive: true});
     await fs.rename(path.join(tmp_dir.path, "used.txt"), path.join(result_path, "used.txt"));
     await fs.rename(path.join(tmp_dir.path, "unused.txt"), path.join(result_path, "unused.txt"));
-    await fs.rename(path.join(tmp_dir.path, "error.txt"), path.join(result_path, "error.txt"));
+    if (has_error) {
+        await fs.rename(path.join(tmp_dir.path, "error.txt"), path.join(result_path, "error.txt"));
+    } else {
+        await fs.unlink(path.join(tmp_dir.path, "error.txt"));
+    }
     await tmp_dir.cleanup();
 }
 
