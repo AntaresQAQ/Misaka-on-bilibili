@@ -121,8 +121,7 @@ async function main() {
     await unused_file.close();
     await error_file.close();
 
-    let result_path = path.join(__dirname, "result",
-        moment().format("YYYY-MM-DD HH-mm-ss"));
+    let result_path = path.join(__dirname, "result", moment().format("YYYY-MM-DD HH-mm-ss"));
     await fs.mkdir(result_path, {recursive: true});
     await fs.rename(path.join(tmp_dir.path, "used.txt"), path.join(result_path, "used.txt"));
     await fs.rename(path.join(tmp_dir.path, "unused.txt"), path.join(result_path, "unused.txt"));
