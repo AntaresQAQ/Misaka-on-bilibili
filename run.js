@@ -2,6 +2,7 @@ const request = require("request-promise");
 const fs = require("fs-extra").promises;
 const path = require("path");
 const moment = require("moment");
+const tmp = require("tmp-promise");
 
 const retry_times = 3;
 const range = {begin: 0, end: 20005};
@@ -46,13 +47,10 @@ async function check(nickname) {
 }
 
 async function main() {
-    let result_path = path.join(__dirname, "result",
-        moment(new Date()).format("YYYY-MM-DD HH-mm-ss"));
-    await fs.mkdir(result_path, {recursive: true});
-
-    let used_file = await fs.open(path.join(result_path, "used.txt"), "w");
-    let unused_file = await fs.open(path.join(result_path, "unused.txt"), "w");
-    let error_file = await fs.open(path.join(result_path, "error.txt"), "w");
+    let tmp_dir = await tmp.dir();
+    let used_file = await fs.open(path.join(tmp_dir.path, "used.txt"), "w");
+    let unused_file = await fs.open(path.join(tmp_dir.path, "unused.txt"), "w");
+    let error_file = await fs.open(path.join(tmp_dir.path, "error.txt"), "w");
 
     let count_used = 0, count_unused = 0;
     for (let i = range.begin; i <= range.end; i++) {
@@ -119,6 +117,14 @@ async function main() {
     await used_file.close();
     await unused_file.close();
     await error_file.close();
+
+    let result_path = path.join(__dirname, "result",
+        moment(new Date()).format("YYYY-MM-DD HH-mm-ss"));
+    await fs.mkdir(result_path, {recursive: true});
+    await fs.rename(path.join(tmp_dir.path, "used.txt"), path.join(result_path, "used.txt"));
+    await fs.rename(path.join(tmp_dir.path, "unused.txt"), path.join(result_path, "unused.txt"));
+    await fs.rename(path.join(tmp_dir.path, "error.txt"), path.join(result_path, "error.txt"));
+    await tmp_dir.cleanup();
 }
 
 let running = main();

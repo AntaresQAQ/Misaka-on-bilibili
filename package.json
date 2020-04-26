@@ -11,6 +11,7 @@
     "fs-extra": "^9.0.0",
     "moment": "^2.24.0",
     "request": "^2.88.2",
-    "request-promise": "^4.2.5"
+    "request-promise": "^4.2.5",
+    "tmp-promise": "^2.0.2"
   }
 }
