@@ -1,7 +1,7 @@
-const requestPromise = require("request-promise");
 const fsPromises = require("fs-extra").promises;
-const path = require("path");
 const moment = require("moment");
+const path = require("path");
+const requestPromise = require("request-promise");
 const tmpPromise = require("tmp-promise");
 
 const retry_times = 3;
