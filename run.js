@@ -2,7 +2,6 @@ const fsPromises = require("fs-extra").promises;
 const moment = require("moment");
 const path = require("path");
 const requestPromise = require("request-promise");
-const tmpPromise = require("tmp-promise");
 
 const retry_times = 3;
 const range = {begin: 0, end: 20005};
@@ -47,10 +46,9 @@ async function check(nickname) {
 }
 
 async function main() {
-    let tmp_dir = await tmpPromise.dir();
-    let used_file = await fsPromises.open(path.join(tmp_dir.path, "used.txt"), "w");
-    let unused_file = await fsPromises.open(path.join(tmp_dir.path, "unused.txt"), "w");
-    let error_file = await fsPromises.open(path.join(tmp_dir.path, "error.txt"), "w");
+    let used_buffer_list = [];
+    let unused_buffer_list = [];
+    let error_buffer_list = [];
 
     let has_error = false;
     let count_used = 0, count_unused = 0;
@@ -61,27 +59,30 @@ async function main() {
             if (await check(nickname)) {
                 count_used++;
                 if (count_used % 10) {
-                    await used_file.write(nickname + ' ');
+                    used_buffer_list.push(Buffer.from(nickname + ' ', "utf8"));
                 } else {
-                    await used_file.write(nickname + '\n');
+                    used_buffer_list.push(Buffer.from(nickname + '\n', "utf8"));
                 }
             } else {
                 count_unused++;
                 if (count_unused % 10) {
-                    await unused_file.write(nickname + ' ');
+                    unused_buffer_list.push(Buffer.from(nickname + ' ', "utf8"));
                 } else {
-                    await unused_file.write(nickname + '\n');
+                    unused_buffer_list.push(Buffer.from(nickname + '\n', "utf8"));
                 }
             }
         } catch (err) {
             has_error = true;
             console.error(err);
-            await error_file.write(nickname + '\n');
+            error_buffer_list.push(Buffer.from(nickname + '\n' +
+                err.toString() + "\n\n", "utf8"));
         }
     }
 
-    await used_file.write("\n\n规则命名共计" + count_used + "位御坂妹妹\n\n");
-    await unused_file.write("\n\n规则命名共计" + count_unused + "位御坂妹妹\n\n");
+    used_buffer_list.push(Buffer.from("\n\n规则命名共计" +
+        count_used + "位御坂妹妹\n\n", "utf8"));
+    unused_buffer_list.push(Buffer.from("\n\n规则命名共计" +
+        count_unused + "位御坂妹妹\n\n", "utf8"));
 
     let count_used_special = 0, count_unused_special = 0;
     for (let i = range.begin; i <= Math.min(9999, range.end); i++) {
@@ -92,45 +93,51 @@ async function main() {
                 count_used++;
                 count_used_special++;
                 if (count_used_special % 10) {
-                    await used_file.write(nickname + ' ');
+                    used_buffer_list.push(Buffer.from(nickname + ' ', "utf8"));
                 } else {
-                    await used_file.write(nickname + '\n');
+                    used_buffer_list.push(Buffer.from(nickname + '\n', "utf8"));
                 }
             } else {
                 count_unused++;
                 count_unused_special++
                 if (count_unused_special % 10) {
-                    await unused_file.write(nickname + ' ');
+                    unused_buffer_list.push(Buffer.from(nickname + ' ', "utf8"));
                 } else {
-                    await unused_file.write(nickname + '\n');
+                    unused_buffer_list.push(Buffer.from(nickname + '\n', "utf8"));
                 }
             }
         } catch (err) {
             has_error = true;
             console.error(err);
-            await error_file.write(nickname + '\n');
+            error_buffer_list.push(Buffer.from(nickname + '\n' +
+                err.toString() + "\n\n", "utf8"));
         }
     }
-    await used_file.write("\n\n特殊命名共计" + count_used_special + "位御坂妹妹\n\n");
-    await unused_file.write("\n\n特殊命名共计" + count_unused_special + "位御坂妹妹\n\n");
+    used_buffer_list.push(Buffer.from("\n\n特殊命名共计" +
+        count_used_special + "位御坂妹妹\n\n", "utf8"));
+    unused_buffer_list.push(Buffer.from("\n\n特殊命名共计" +
+        count_unused_special + "位御坂妹妹\n\n", "utf8"));
 
-    await used_file.write("\n\n共计" + count_used + "位御坂妹妹");
-    await unused_file.write("\n\n共计" + count_unused + "位御坂妹妹");
+    used_buffer_list.push(Buffer.from("\n\n共计" +
+        count_used + "位御坂妹妹", "utf8"));
+    unused_buffer_list.push(Buffer.from("\n\n共计" +
+        count_unused + "位御坂妹妹", "utf8"));
 
-    await used_file.close();
-    await unused_file.close();
-    await error_file.close();
 
     let result_path = path.join(__dirname, "result", moment().format("YYYY-MM-DD HH-mm-ss"));
     await fsPromises.mkdir(result_path, {recursive: true});
-    await fsPromises.rename(path.join(tmp_dir.path, "used.txt"), path.join(result_path, "used.txt"));
-    await fsPromises.rename(path.join(tmp_dir.path, "unused.txt"), path.join(result_path, "unused.txt"));
+    let used_file = await fsPromises.open(path.join(result_path, "used.txt"), "w");
+    let unused_file = await fsPromises.open(path.join(result_path, "unused.txt"), "w");
+    await used_file.write(Buffer.concat(used_buffer_list));
+    await unused_file.write(Buffer.concat(unused_buffer_list));
+    await used_file.close();
+    await unused_file.close();
     if (has_error) {
-        await fsPromises.rename(path.join(tmp_dir.path, "error.txt"), path.join(result_path, "error.txt"));
-    } else {
-        await fsPromises.unlink(path.join(tmp_dir.path, "error.txt"));
+        let error_file = await fsPromises.open(path.join(result_path, "error.txt"), "w");
+        await error_file.write(Buffer.concat(error_buffer_list));
+        await error_file.close();
+
     }
-    await tmp_dir.cleanup();
 }
 
 let running = main();
